@@ -35,12 +35,26 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
 
-      - name: notification
-        if: cancelled() == false
-        uses: xinthink/action-telegram@v1.1
-        with:
-          botToken: ${{ secrets.secret }}
-          chatId: ${{ secrets.ChatID }}
-          jobStatus: ${{ job.status }}
+        
+    name: telegram message
+    on: [push]
+    jobs:
+
+      build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+          - name: send telegram message on push
+            uses: appleboy/telegram-action@master
+            with:
+              to: ${{ secrets.CHATID }}
+              token: ${{ secrets.SECRET }}
+              message: |
+                ${{ github.actor }} created commit:
+                Commit message: ${{ github.event.commits[0].message }}
+            
+                Repository: ${{ github.repository }}
+            
+                See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
 
     
